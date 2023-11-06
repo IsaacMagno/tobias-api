@@ -9,6 +9,7 @@ const Authentication = require("./authentication");
 const Token = require("./token");
 const Quote = require("./quote");
 const Item = require("./item");
+const Achievement = require("./achievement");
 
 Champion.hasOne(Statistic, {
   foreignKey: "champion_id",
@@ -78,4 +79,5 @@ module.exports = {
   Token,
   Quote,
   Item,
+  Achievement,
 };
