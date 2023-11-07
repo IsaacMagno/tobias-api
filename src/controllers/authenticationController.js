@@ -1,14 +1,15 @@
 const authenticationService = require("../services/authenticationServices");
 const { v4: uuidv4 } = require("uuid");
 
-const generateInvite = async (_req, res) => {
+const generateInvite = async (req, res) => {
   try {
+    const { champion_id } = req.body;
     const newToken = uuidv4();
 
     const inviteGenerated = await authenticationService.createToken({
       token: newToken,
       used: false,
-      champion_id: 1,
+      champion_id,
     });
 
     return res.status(200).json(inviteGenerated);
