@@ -6,6 +6,7 @@ const { Champion } = require("../database/models");
 const { createActivities } = require("./activitiesServices");
 const { createStatistics, findStatisticById } = require("./statisticsServices");
 const { createCalendar } = require("./calendarServices");
+const { uploadFile } = require("./filesServices");
 
 const TIMEZONE = "America/Sao_Paulo";
 const BIO_PATTERN =
@@ -226,7 +227,7 @@ const updateChampionDaystreak = async (id) => {
  * @returns {Object} O campeão criado.
  * @throws {Error} Se houver um erro ao criar o campeão.
  */
-const createChampion = async (championData) => {
+const createChampion = async (championData, fileData) => {
   try {
     if (!championData || !championData.name || !championData.bornDate) {
       throw new Error("Dados do campeão são inválidos.");
@@ -242,6 +243,7 @@ const createChampion = async (championData) => {
       level: 1,
       xpBoost: 0,
       daystreakShield: 3,
+      tobiasCoins: 100,
     };
 
     const champion = await Champion.create(newChampionData);
@@ -250,6 +252,7 @@ const createChampion = async (championData) => {
     await createActivities(rawChampion.id);
     await createStatistics(rawChampion.id);
     await createCalendar(rawChampion.id);
+    await uploadFile(fileData, rawChampion.id);
 
     return rawChampion;
   } catch (error) {

@@ -1,6 +1,9 @@
 // Importando as bibliotecas necessárias
 const bcrypt = require("bcrypt");
 const moment = require("moment");
+const jwt = require("jsonwebtoken");
+
+const SECRET = process.env.SECRET;
 
 // Importando os modelos do banco de dados
 const { Authentication, Token } = require("../database/models");
@@ -182,6 +185,15 @@ const updateToken = async (token) => {
 };
 
 /**
+ * Função para criar um token JWT.
+ * @param {object} payload - O payload para o token.
+ * @returns {string} Retorna o token JWT.
+ */
+const createJWToken = (payload) => {
+  return jwt.sign(payload, SECRET, { expiresIn: "1h" });
+};
+
+/**
  * Função de login para um campeão.
  * @param {object} loginData - Os dados do campeão para login.
  * @returns {object|boolean} Retorna um objeto contendo a validade do login e os dados atualizados do campeão se bem-sucedido, falso caso contrário.
@@ -198,16 +210,19 @@ const login = async (loginData) => {
 
     if (!isValid) return false;
 
-    const championData = await getChampionById(champion.champion_id);
+    const { champion_id, name } = champion;
+    const token = createJWToken({ champion_id, name });
+
+    const championData = await getChampionById(champion_id);
 
     const today = moment().tz(TIMEZONE).startOf("day");
     const lastLogin = moment(champion.lastLogin).tz(TIMEZONE).startOf("day");
 
     await updateDaystreak(champion, championData, today, lastLogin);
 
-    const champUpdated = await getChampionById(champion.champion_id);
+    const champUpdated = await getChampionById(champion_id);
 
-    return { isValid, champUpdated };
+    return { isValid, champUpdated, token: `Bearer ${token}` };
   } catch (error) {
     console.error(error);
     throw error;
@@ -222,19 +237,13 @@ const login = async (loginData) => {
  * @returns {Object} A autenticação de login criada.
  * @throws {Error} Se houver um erro ao criar o campeão ou a autenticação de login.
  */
-const createLogin = async (loginData, token) => {
+const createLogin = async (loginData, fileData) => {
   try {
     if (!loginData || !loginData.username || !loginData.password) {
       throw new Error("Dados de login são inválidos.");
     }
 
-    const usernameValid = await findChampionByUsername(loginData.username);
-
-    if (usernameValid !== null) {
-      throw new Error("Nome de usuário já existe.");
-    }
-
-    const champion = await createChampion(loginData);
+    const champion = await createChampion(loginData, fileData);
 
     const hash = await bcrypt.hash(loginData.password, 13);
 
@@ -244,7 +253,7 @@ const createLogin = async (loginData, token) => {
       champion_id: champion.id,
     });
 
-    await updateToken(token);
+    await updateToken(loginData.token);
 
     return loginAuthentication;
   } catch (error) {
@@ -259,4 +268,5 @@ module.exports = {
   createToken,
   findToken,
   updateToken,
+  findChampionByUsername,
 };

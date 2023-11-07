@@ -1,8 +1,5 @@
 const authenticationService = require("../services/authenticationServices");
 const { v4: uuidv4 } = require("uuid");
-const jwt = require("jsonwebtoken");
-
-const SECRET = process.env.SECRET;
 
 const generateInvite = async (_req, res) => {
   try {
@@ -22,19 +19,12 @@ const generateInvite = async (_req, res) => {
 
 const createChampion = async (req, res) => {
   try {
-    const { inviteToken } = req.body;
-
     const championData = req.body;
-
-    const invite = await authenticationService.findToken(inviteToken);
-
-    if (!invite || invite.used) {
-      return res.status(400).json({ message: "Convite inválido" });
-    }
+    const fileData = req.file.filename;
 
     const createdChampion = await authenticationService.createLogin(
       championData,
-      inviteToken
+      fileData
     );
 
     return res.status(200).json({ createdChampion });
@@ -48,12 +38,6 @@ const login = async (req, res) => {
     const championData = req.body;
 
     const validLogin = await authenticationService.login(championData);
-
-    if (validLogin.isValid) {
-      const { id, name } = validLogin.champUpdated;
-      const token = jwt.sign({ id, name }, SECRET, { expiresIn: "1h" });
-      validLogin.token = `Bearer ${token}`;
-    }
 
     return res.status(200).json({ validLogin });
   } catch (error) {

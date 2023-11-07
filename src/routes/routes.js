@@ -7,9 +7,16 @@ const uploadImage = require("../middlewares/uploadImage");
 const calendarController = require("../controllers/calendarController");
 const activitiesController = require("../controllers/activitiesController");
 const itemsController = require("../controllers/itemController");
+const achievementsController = require("../controllers/achievementController");
+const validateRegister = require("../middlewares/validateRegister");
 
 // Autenticação
-router.post("/create-new-champion", authenticationController.createChampion);
+router.post(
+  "/create-new-champion",
+  uploadImage.single("file"),
+  validateRegister,
+  authenticationController.createChampion
+);
 router.post("/champion-login", authenticationController.login);
 
 // Campeões
@@ -32,5 +39,12 @@ router.get("/items/:store", itemsController.getItemsByStore);
 router.post("/item", itemsController.createItem);
 router.put("/item/:id", itemsController.updateItem);
 router.delete("/item/:id", itemsController.deleteItem);
+
+// Conquistas
+router.get("/achievements", achievementsController.getAllAchievements);
+router.get("/achievement/:id", achievementsController.getAchievementById);
+router.post("/achievement", achievementsController.createAchievement);
+router.put("/achievement/:id", achievementsController.updateAchievement);
+router.delete("/achievement/:id", achievementsController.deleteAchievement);
 
 module.exports = router;
