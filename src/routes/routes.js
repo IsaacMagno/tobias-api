@@ -8,6 +8,7 @@ const calendarController = require("../controllers/calendarController");
 const activitiesController = require("../controllers/activitiesController");
 const itemsController = require("../controllers/itemController");
 const achievementsController = require("../controllers/achievementController");
+const quotesController = require("../controllers/quoteController");
 const validateRegister = require("../middlewares/validateRegister");
 
 // Autenticação
@@ -46,5 +47,9 @@ router.get("/achievement/:id", achievementsController.getAchievementById);
 router.post("/achievement", achievementsController.createAchievement);
 router.put("/achievement/:id", achievementsController.updateAchievement);
 router.delete("/achievement/:id", achievementsController.deleteAchievement);
+
+// Frases
+router.get("/quote", quotesController.getAllQuotes);
+router.get("/random-quote", quotesController.randomSelectQuote);
 
 module.exports = router;

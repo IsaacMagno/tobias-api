@@ -12,6 +12,7 @@ const { Authentication, Token } = require("../database/models");
 const {
   updateChampionDaystreakAndShield,
   getChampionById,
+  getChampionByIdFull,
   createChampion,
 } = require("../services/championsServices");
 
@@ -220,7 +221,7 @@ const login = async (loginData) => {
 
     await updateDaystreak(champion, championData, today, lastLogin);
 
-    const champUpdated = await getChampionById(champion_id);
+    const champUpdated = await getChampionByIdFull(champion_id);
 
     return { isValid, champUpdated, token: `Bearer ${token}` };
   } catch (error) {

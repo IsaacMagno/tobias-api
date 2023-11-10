@@ -1,5 +1,22 @@
 const championsServices = require("../services/championsServices");
 
+const getChampionByIdFull = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const champion = await championsServices.getChampionByIdFull(id);
+
+    if (!champion) {
+      return res.status(404).json({ message: "Campeão não encontrado" });
+    }
+
+    return res.status(200).json({ champion });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao buscar o campeão" });
+  }
+};
+
 const getChampionById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -76,6 +93,7 @@ const updateChampionDaystreak = async (req, res) => {
 };
 
 module.exports = {
+  getChampionByIdFull,
   getChampionById,
   getAllChampions,
   updateChampionBiography,

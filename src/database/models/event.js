@@ -15,6 +15,7 @@ Event.init(
     sequelize,
     tableName: "Events",
     timestamps: false,
+    underscored: true,
   }
 );
 

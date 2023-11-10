@@ -3,6 +3,28 @@ const { Quote } = require("../database/models");
 const ERROR_QUOTE_NOT_FOUND = "Citação não encontrada!";
 
 /**
+ * Seleciona aleatoriamente uma citação de todas as citações disponíveis.
+ * @returns {object} Retorna uma citação selecionada aleatoriamente.
+ * @throws {Error} Se houver um erro ao buscar as citações.
+ */
+const randomSelectQuote = async () => {
+  try {
+    const quotes = await getAllQuotes();
+
+    if (!quotes || quotes.length === 0) {
+      throw new Error("Não há citações disponíveis para selecionar.");
+    }
+
+    const randomNumber = Math.floor(Math.random() * quotes.length);
+
+    return quotes[randomNumber];
+  } catch (error) {
+    console.error(`Erro ao selecionar uma citação aleatória: ${error}`);
+    throw error;
+  }
+};
+
+/**
  * Obtém uma citação pelo ID.
  * @param {number} id - O ID da citação.
  * @returns {object} Retorna a citação correspondente ao ID fornecido.
@@ -16,7 +38,7 @@ const getQuote = async (id) => {
  * @returns {object[]} Retorna todas as citações.
  */
 const getAllQuotes = async () => {
-  return await Quote.findAll();
+  return await Quote.findAll({ raw: true });
 };
 
 /**
@@ -60,4 +82,5 @@ module.exports = {
   createQuote,
   updateQuote,
   deleteQuote,
+  randomSelectQuote,
 };

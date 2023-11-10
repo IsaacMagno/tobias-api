@@ -29,6 +29,7 @@ protectedRouter.put(
   "/champion/daystreak/:id",
   championsController.updateChampionDaystreak
 );
+protectedRouter.get("/champion/:id", championsController.getChampionByIdFull);
 
 // Calendario
 protectedRouter.get("/calendars", calendarController.getCalendar);
@@ -53,7 +54,6 @@ protectedRouter.delete("/goal/:id", goalController.deleteGoal);
 
 // Frases
 protectedRouter.get("/quote/:id", quotesController.getQuote);
-protectedRouter.get("/quote", quotesController.getAllQuotes);
 protectedRouter.post("/quote", quotesController.createQuote);
 protectedRouter.put("/quote/:id", quotesController.updateQuote);
 protectedRouter.delete("/quote/:id", quotesController.deleteQuote);

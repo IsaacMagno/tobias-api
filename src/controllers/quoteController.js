@@ -1,5 +1,14 @@
 const quoteServices = require("../services/quoteServices");
 
+const randomSelectQuote = async (req, res) => {
+  try {
+    const quote = await quoteServices.randomSelectQuote();
+
+    return res.status(200).json({ quote });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 const getQuote = async (req, res) => {
   try {
     const { id } = req.params;
@@ -60,6 +69,7 @@ const deleteQuote = async (req, res) => {
 };
 
 module.exports = {
+  randomSelectQuote,
   getQuote,
   getAllQuotes,
   createQuote,
