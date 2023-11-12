@@ -265,6 +265,7 @@ const createChampion = async (championData, fileData) => {
       xpBoost: 0,
       daystreakShield: 3,
       tobiasCoins: 100,
+      achievementPoints: 0,
     };
 
     const champion = await Champion.create(newChampionData);

@@ -17,6 +17,7 @@ Champion.init(
     biography: DataTypes.TEXT,
     daystreakShield: DataTypes.INTEGER,
     tobiasCoins: DataTypes.FLOAT,
+    achievementPoints: DataTypes.INTEGER,
   },
   {
     sequelize,
