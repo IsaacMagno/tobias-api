@@ -1,4 +1,5 @@
 const { Item } = require("../database/models");
+const { getChampionById } = require("./championsServices");
 
 /**
  * Busca todos os itens de uma loja específica.
@@ -99,6 +100,24 @@ const deleteItem = async (id) => {
   }
 };
 
+const buyDaystreakShield = async ({ buyData }) => {
+  try {
+    const item = await getItemById(buyData.itemId);
+    const champion = await getChampionById(buyData.id);
+
+    if (champion.daystreakShield < 3) {
+      await champion.update({
+        daystreakShield: champion.daystreakShield + 1,
+        tobiasCoins: champion.tobiasCoins - item.price,
+      });
+    } else {
+    }
+  } catch (error) {
+    console.error(`Erro ao comprar item com id:${buyData.itemId}:`, error);
+    throw error;
+  }
+};
+
 module.exports = {
   getItemsByStore,
   getItemById,
@@ -106,4 +125,5 @@ module.exports = {
   createItem,
   updateItem,
   deleteItem,
+  buyDaystreakShield,
 };

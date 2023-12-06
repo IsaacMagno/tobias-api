@@ -13,6 +13,14 @@ Goal.init(
     week: DataTypes.FLOAT,
     daily: DataTypes.FLOAT,
     actual: DataTypes.INTEGER,
+    stats: {
+      type: DataTypes.ENUM,
+      values: ["DEX", "STR", "INT", "CON", "Nenhum"],
+      allowNull: false,
+    },
+    link: DataTypes.STRING,
+    completed: DataTypes.BOOLEAN,
+    completedDate: DataTypes.DATEONLY,
   },
   {
     sequelize,

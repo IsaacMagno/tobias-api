@@ -1,5 +1,6 @@
 const { Statistic } = require("../database/models");
 const { statsRefactor } = require("../helpers/statsRefactor");
+const { getChampionByIdFull } = require("./championService");
 
 /**
  * Atualiza as estatísticas de um campeão.
@@ -8,7 +9,7 @@ const { statsRefactor } = require("../helpers/statsRefactor");
  */
 const updateStatistic = async (activities) => {
   try {
-    const { id } = activities[0];
+    const { id } = activities;
 
     // Buscar as estatísticas atuais
     const actualStats = await Statistic.findAll({
@@ -28,18 +29,15 @@ const updateStatistic = async (activities) => {
         { [stats]: [value] },
         { where: { champion_id: id } }
       );
-
-      // Buscar as estatísticas atualizadas
-      const statsUpdated = await Statistic.findAll({
-        where: { champion_id: id },
-        raw: true,
-      });
-
-      return statsUpdated;
     });
 
-    // Aguardar todas as atualizações
-    return await Promise.all(updatePromises);
+    // // Aguardar todas as atualizações
+    await Promise.all(updatePromises);
+
+    // Buscar os dados do campeão atualizados
+    const championUpdated = await getChampionByIdFull(id);
+
+    return championUpdated;
   } catch (error) {
     console.error(error);
     throw error;

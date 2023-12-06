@@ -1,10 +1,11 @@
 const championsServices = require("../services/championsServices");
+const championsService = require("../services/championService");
 
 const getChampionByIdFull = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const champion = await championsServices.getChampionByIdFull(id);
+    const champion = await championsService.getChampionByIdFull(id);
 
     if (!champion) {
       return res.status(404).json({ message: "Campeão não encontrado" });

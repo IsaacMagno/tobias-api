@@ -1,4 +1,46 @@
 const { Activitie } = require("../database/models");
+const {
+  updateChampionExp,
+  updateChampionDaystreak,
+} = require("./championsServices");
+
+const expBase = {
+  kmRun: 150,
+  jumpRope: 0.5,
+  kmBike: 50,
+  upperLimb: 2,
+  abs: 2,
+  lowerLimb: 3.5,
+  meals: 25,
+  drinks: 5,
+  sleep: 1.5,
+  study: 200,
+  meditation: 1000,
+  reading: 300,
+};
+
+/**
+ * Atualiza a experiência e a sequência diária de um campeão.
+ * @param {number} id - O ID do campeão.
+ * @param {string} stats - A estatística a ser atualizada.
+ * @param {number} value - O valor a ser adicionado à estatística.
+ * @throws {Error} Lança um erro se houver algum problema ao atualizar a experiência ou a sequência diária do campeão.
+ */
+const handleUpdateExpAndDaystreak = async (id, stats, value) => {
+  try {
+    // Calcula a experiência do campeão com base na estatística e no valor
+    const championExp = {};
+    championExp.xp = expBase[stats] * value;
+    await updateChampionExp(id, championExp);
+    await updateChampionDaystreak(id);
+  } catch (error) {
+    console.error(
+      `Erro ao atualizar a experiência ou a sequência diária do campeão:`,
+      error
+    );
+    throw error;
+  }
+};
 
 /**
  * Atualiza as atividades de um campeão.
@@ -10,29 +52,25 @@ const { Activitie } = require("../database/models");
 const updateActivities = async (champion_id, stats, value) => {
   try {
     // Buscar as estatísticas antigas
-    const oldStats = await Activitie.findAll({
-      where: { champion_id },
-      raw: true,
-    });
+    const oldStats = await findActivityById(champion_id);
 
     // Verificar se as estatísticas antigas existem
-    if (!oldStats || oldStats.length === 0) {
+    if (!oldStats) {
       throw new Error("No old stats found for the given champion_id");
     }
 
-    const { [stats]: oldStat } = oldStats[0];
+    const { [stats]: oldStat } = oldStats;
 
     // Atualizar as estatísticas
     await Activitie.update(
-      { [stats]: value + oldStat },
+      { [stats]: parseFloat(value) + parseFloat(oldStat) },
       { where: { champion_id } }
     );
 
+    await handleUpdateExpAndDaystreak(champion_id, stats, value);
+
     // Buscar as estatísticas atualizadas
-    const statsUpdated = await Activitie.findAll({
-      where: { champion_id },
-      raw: true,
-    });
+    const statsUpdated = await findActivityById(champion_id);
 
     return statsUpdated;
   } catch (error) {
@@ -55,46 +93,6 @@ const findActivityById = async (id) => {
   return activity;
 };
 
-/**
- * Cria atividades para um campeão.
- * @param {number} id - O ID do campeão.
- * @returns {object} Retorna as atividades criadas.
- * @throws {Error} Lança um erro se o campeão já tiver atividades ou se ocorrer um problema ao criar as atividades.
- */
-const createActivities = async (id) => {
-  try {
-    // Verifica se o campeão já tem atividades
-    const championAlreadyHaveActivities = await findActivityById(id);
-
-    if (championAlreadyHaveActivities) {
-      throw new Error(`O campeão com ID ${id} já tem atividades!`);
-    }
-
-    // Cria as atividades para o campeão
-    const createdActivities = await Activitie.create({
-      kmRun: 0,
-      jumpRope: 0,
-      kmBike: 0,
-      upperLimb: 0,
-      abs: 0,
-      lowerLimb: 0,
-      meals: 0,
-      drinks: 0,
-      study: 0,
-      meditation: 0,
-      reading: 0,
-      sleep: 0,
-      champion_id: id,
-    });
-
-    return createdActivities;
-  } catch (error) {
-    console.error(`Erro ao criar atividades para o campeão ${id}:`, error);
-    throw error;
-  }
-};
-
 module.exports = {
   updateActivities,
-  createActivities,
 };

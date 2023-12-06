@@ -67,11 +67,11 @@ const getCalendar = async () => {
  * @param {number} id - O ID do calendário.
  * @returns {object} Retorna o evento criado.
  */
-const createEvent = async ({ newEvent }, id) => {
+const createEvent = async ({ event }, id) => {
   try {
-    newEvent.CalendarId = parseInt(id);
+    event.calendar_id = parseInt(id);
 
-    const createdEvent = await Event.create(newEvent);
+    const createdEvent = await Event.create(event);
 
     return createdEvent;
   } catch (error) {
@@ -91,7 +91,6 @@ const deleteEvent = async ({ date }, id) => {
     const deletedEvent = await Event.destroy({
       where: { calendar_id: id, date },
     });
-
     return deletedEvent;
   } catch (error) {
     console.error("Erro ao excluir evento:", error);

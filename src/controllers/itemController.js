@@ -1,5 +1,15 @@
 const itemServices = require("../services/itemServices");
 
+const buyItem = async (req, res) => {
+  try {
+    const itemBuyed = itemServices.buyDaystreakShield(req.body);
+
+    return res.status(200).json({ itemBuyed });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const getItemsByStore = async (req, res) => {
   try {
     const { store } = req.params;
@@ -73,4 +83,5 @@ module.exports = {
   createItem,
   updateItem,
   deleteItem,
+  buyItem,
 };

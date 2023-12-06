@@ -1,4 +1,12 @@
-const { Achievement } = require("../database/models");
+const {
+  Achievement,
+  Activitie,
+  AchievementsCompleted,
+  Champion,
+} = require("../database/models");
+const {
+  createAchievementCompleted,
+} = require("./achievementsCompletedServices");
 
 /**
  * Busca uma conquista pelo ID.
@@ -23,7 +31,7 @@ const getAchievementById = async (id) => {
  */
 const getAllAchievements = async () => {
   try {
-    const achievements = await Achievement.findAll();
+    const achievements = await Achievement.findAll({ raw: true });
     return achievements;
   } catch (error) {
     console.error("Erro ao buscar as conquistas:", error);
@@ -79,10 +87,94 @@ const deleteAchievement = async (id) => {
   }
 };
 
+const getAchievementByLink = async (stats) => {
+  try {
+    const achievements = await Achievement.findAll({
+      where: { link: [stats] },
+    });
+    return achievements;
+  } catch (error) {
+    console.error("Erro ao buscar as conquistas:", error);
+    throw error;
+  }
+};
+
+/**
+ * Atualiza uma conquista com base no link.
+ * @param {number} id - O ID do campeão.
+ * @param {string} stats - As estatísticas.
+ * @throws {Error} Lança um erro se houver algum problema ao atualizar a conquista.
+ */
+const updateAchievementByLink = async (id, stats) => {
+  try {
+    // Busca a atividade do campeão
+    const activities = await Activitie.findOne({
+      where: { champion_id: id },
+      raw: true,
+    });
+
+    // Obtém o valor da estatística
+    const statValue = activities[stats];
+
+    // Busca todas as conquistas que têm o link correspondente
+    const achievements = await getAchievementByLink([stats]);
+
+    // Busca todas as conquistas completadas do campeão
+    const achievementsCompleted = await AchievementsCompleted.findAll({
+      where: { champion_id: id },
+    });
+
+    // Itera sobre todas as conquistas
+    for (const achievement of achievements) {
+      // Verifica se o valor da estatística é maior ou igual à meta da conquista
+      if (statValue >= achievement.goal) {
+        // Verifica se a conquista já foi completada
+        const alreadyCompleted = achievementsCompleted.some(
+          (achiev) => achiev.achievement_id === achievement.id
+        );
+
+        // Se a conquista ainda não foi completada, cria uma nova conquista completada
+        if (!alreadyCompleted) {
+          await createAchievementCompleted({
+            champion_id: id,
+            achievement_id: achievement.id,
+            date: Date.now(),
+          });
+
+          // Busca o campeão
+          const champion = await Champion.findOne({ where: { id } });
+
+          // Adiciona os novos valores aos valores existentes
+          const updatedXp = (champion.xp || 0) + achievement.rewards.xp;
+          const updatedTobiasCoins =
+            (champion.tobiasCoins || 0) + achievement.rewards.tobiasCoins;
+          const updatedAchievementPoints =
+            (champion.achievementPoints || 0) +
+            achievement.rewards.achievementPoints;
+
+          // Atualiza o campeão
+          await Champion.update(
+            {
+              xp: updatedXp,
+              tobiasCoins: updatedTobiasCoins,
+              achievementPoints: updatedAchievementPoints,
+            },
+            { where: { id } }
+          );
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Erro ao atualizar a conquista por link:`, error);
+    throw error;
+  }
+};
+
 module.exports = {
   getAchievementById,
   getAllAchievements,
   createAchievement,
   updateAchievement,
   deleteAchievement,
+  updateAchievementByLink,
 };

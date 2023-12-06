@@ -12,7 +12,6 @@ const { Authentication, Token } = require("../database/models");
 const {
   updateChampionDaystreakAndShield,
   getChampionById,
-  getChampionByIdFull,
   createChampion,
 } = require("../services/championsServices");
 
@@ -214,16 +213,14 @@ const login = async (loginData) => {
     const { champion_id, name } = champion;
     const token = createJWToken({ champion_id, name });
 
-    const championData = await getChampionById(champion_id);
+    // const championData = await getChampionById(champion_id);
 
-    const today = moment().tz(TIMEZONE).startOf("day");
-    const lastLogin = moment(champion.lastLogin).tz(TIMEZONE).startOf("day");
+    // const today = moment().tz(TIMEZONE).startOf("day");
+    // const lastLogin = moment(champion.lastLogin).tz(TIMEZONE).startOf("day");
 
-    await updateDaystreak(champion, championData, today, lastLogin);
+    // await updateDaystreak(champion, championData, today, lastLogin);
 
-    const champUpdated = await getChampionByIdFull(champion_id);
-
-    return { isValid, champUpdated, token: `Bearer ${token}` };
+    return { isValid, champion, token: `Bearer ${token}` };
   } catch (error) {
     console.error(error);
     throw error;
@@ -254,6 +251,7 @@ const createLogin = async (loginData, fileData) => {
       champion_id: champion.id,
     });
 
+    // Desativa o token
     await updateToken(loginData.token);
 
     return loginAuthentication;
@@ -270,4 +268,5 @@ module.exports = {
   findToken,
   updateToken,
   findChampionByUsername,
+  createJWToken,
 };

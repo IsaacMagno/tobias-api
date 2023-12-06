@@ -38,10 +38,10 @@ const createEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const eventDate = req.body;
+    const { eventDate } = req.body;
 
     const deleteEvent = await calendarServices.deleteEvent(eventDate, id);
-    createCalendar;
+
     return res.status(200).json({ deleteEvent });
   } catch (error) {
     return res.status(500).json({ message: error.message });

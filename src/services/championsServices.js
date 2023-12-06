@@ -1,9 +1,9 @@
 const moment = require("moment");
 const statsRefactor = require("../helpers/statsRefactor");
-const calculateLevel = require("../helpers/calculateLevel");
+const { calculateLevel } = require("../helpers/calculateLevel");
 
 const { Champion } = require("../database/models");
-const { createActivities } = require("./activitiesServices");
+const { createActivities } = require("./activitieServices");
 const { createStatistics, findStatisticById } = require("./statisticsServices");
 const { createCalendar } = require("./calendarServices");
 const { uploadFile } = require("./filesServices");
@@ -34,31 +34,10 @@ const updateChampionDaystreakAndShield = async (
     {
       daystreak: newDaystreak,
       daystreakShield: newDaystreakShield,
-      lastLogin: today,
+      lastDaystreakUpdate: today,
     },
     { where: { id: champion_id } }
   );
-};
-
-/**
- * Função para obter um campeão pelo ID, incluindo todas as tabelas associadas.
- * Busca um campeão pelo ID e retorna o campeão encontrado, juntamente com todas as tabelas associadas.
- *
- * @param {number} id - O ID do campeão a ser buscado.
- * @returns {Object} O campeão encontrado, incluindo todas as tabelas associadas.
- * @throws {Error} Se houver um erro ao buscar o campeão.
- */
-const getChampionByIdFull = async (id) => {
-  try {
-    const champion = await Champion.findOne({
-      where: { id },
-      include: [{ all: true, nested: true }], // Inclui todas as tabelas associadas
-    });
-    return champion;
-  } catch (error) {
-    console.error(`Erro ao buscar o campeão com id ${id}: ${error}`);
-    throw error;
-  }
 };
 
 /**
@@ -71,7 +50,7 @@ const getChampionByIdFull = async (id) => {
  */
 const getChampionById = async (id) => {
   try {
-    const champion = await Champion.findOne({ where: { id }, raw: true });
+    const champion = await Champion.findOne({ where: { id } });
     return champion;
   } catch (error) {
     console.error(`Erro ao buscar o campeão com id ${id}: ${error}`);
@@ -204,26 +183,29 @@ const updateChampionDaystreak = async (id) => {
     const lastUpdate = moment(lastDaystreakUpdate).tz(TIMEZONE).startOf("day");
 
     let diff = calculateDayDifference(lastUpdate, today);
+    let newDaystreak;
 
     if (!lastUpdate.isSame(today, "day")) {
       await updateChampionExp(id, { xp: DAILY_XP_INCREMENT });
     }
 
     if (diff > 1) {
-      const { newDaystreak, newDaystreakShield } = calculateDaystreaks(
+      const updatedDaystreak = calculateDaystreaks(
         daystreak,
         daystreakShield,
         diff
       );
 
+      newDaystreak = updatedDaystreak.newDaystreak;
+
       await updateChampionDaystreakAndShield(
         id,
-        newDaystreak,
-        newDaystreakShield,
+        updatedDaystreak.newDaystreak,
+        updatedDaystreak.newDaystreakShield,
         today
       );
     } else if (!lastUpdate.isSame(today, "day")) {
-      const newDaystreak = daystreak + 1;
+      newDaystreak = daystreak + 1;
 
       await Champion.update(
         { daystreak: newDaystreak, lastDaystreakUpdate: today },
@@ -285,7 +267,6 @@ const createChampion = async (championData, fileData) => {
 };
 
 module.exports = {
-  getChampionByIdFull,
   getChampionById,
   getAllChampions,
   createChampion,

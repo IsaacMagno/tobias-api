@@ -1,5 +1,8 @@
 const activitiesServices = require("../services/activitiesServices");
 const statisticsServices = require("../services/statisticsServices");
+const goalServices = require("../services/goalServices");
+const questsServices = require("../services/questsServices");
+const achievementServices = require("../services/achievementServices");
 
 const updateActivities = async (req, res) => {
   try {
@@ -13,9 +16,21 @@ const updateActivities = async (req, res) => {
       value
     );
 
-    await statisticsServices.updateStatistic(updateChampActivities);
+    // Atualiza as metas do campeão
+    await goalServices.updateGoalByLink(id, stats, value);
 
-    return res.status(200).json({ updateChampActivities });
+    // Atualiza as quests do campeão
+    await questsServices.updateQuestByLink(id, stats, value);
+
+    // Atualiza as conquistas do campeão
+    await achievementServices.updateAchievementByLink(id, stats);
+
+    // Atualiza as statistics do campeão e retorna os dados do mesmo atualizado
+    const championUpdated = await statisticsServices.updateStatistic(
+      updateChampActivities
+    );
+
+    return res.status(200).json({ championUpdated });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

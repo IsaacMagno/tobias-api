@@ -9,8 +9,9 @@ Achievement.init(
     name: DataTypes.STRING,
     description: DataTypes.TEXT,
     rewards: DataTypes.JSON,
-    date: DataTypes.DATEONLY,
     icon: DataTypes.STRING,
+    link: DataTypes.STRING,
+    goal: DataTypes.INTEGER,
   },
   {
     sequelize,

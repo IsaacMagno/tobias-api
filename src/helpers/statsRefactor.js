@@ -192,7 +192,7 @@ const statsRefactor = async (activities, actualStats, id) => {
       study,
       meditation,
       reading,
-    } = activities[0];
+    } = activities;
 
     const { strength, agility, inteligence, vitality } = actualStats[0];
 
