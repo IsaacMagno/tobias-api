@@ -27,10 +27,22 @@ module.exports = {
         type: Sequelize.STRING,
       },
       characteristics: {
-        type: Sequelize.JSON,
+        type: Sequelize.TEXT,
+        get: function () {
+          return JSON.parse(this.getDataValue("characteristics"));
+        },
+        set: function (value) {
+          this.setDataValue("characteristics", JSON.stringify(value));
+        },
       },
       requirements: {
-        type: Sequelize.JSON,
+        type: Sequelize.TEXT,
+        get: function () {
+          return JSON.parse(this.getDataValue("requirements"));
+        },
+        set: function (value) {
+          this.setDataValue("requirements", JSON.stringify(value));
+        },
       },
     });
   },

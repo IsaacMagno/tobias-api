@@ -27,7 +27,13 @@ module.exports = {
         allowNull: false,
       },
       questReward: {
-        type: Sequelize.JSON,
+        type: Sequelize.TEXT,
+        get: function () {
+          return JSON.parse(this.getDataValue("questReward"));
+        },
+        set: function (value) {
+          this.setDataValue("questReward", JSON.stringify(value));
+        },
       },
       completed: {
         type: Sequelize.BOOLEAN,

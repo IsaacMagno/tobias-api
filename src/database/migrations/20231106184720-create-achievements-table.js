@@ -14,7 +14,13 @@ module.exports = {
         type: Sequelize.TEXT,
       },
       rewards: {
-        type: Sequelize.JSON,
+        type: Sequelize.TEXT,
+        get: function () {
+          return JSON.parse(this.getDataValue("rewards"));
+        },
+        set: function (value) {
+          this.setDataValue("rewards", JSON.stringify(value));
+        },
       },
       date: {
         type: Sequelize.DATEONLY,
