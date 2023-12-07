@@ -12,6 +12,6 @@ app.use(express.json());
 app.use("/images", express.static("public"));
 
 app.use("/", routes);
-app.use("/", protectedRoutes);
+app.use("/shield/", protectedRoutes);
 
 module.exports = app;

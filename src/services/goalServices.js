@@ -81,7 +81,7 @@ const updateGoal = async (id, { goalData }) => {
 
     const goalDataUpdate = { actual: goal.actual + parseInt(goalData) };
 
-    if (goalDataUpdate.actual === goal.goal) {
+    if (goalDataUpdate.actual >= goal.goal) {
       goalDataUpdate.completed = true;
       goalDataUpdate.completedDate = new Date();
     }

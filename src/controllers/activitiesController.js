@@ -3,6 +3,7 @@ const statisticsServices = require("../services/statisticsServices");
 const goalServices = require("../services/goalServices");
 const questsServices = require("../services/questsServices");
 const achievementServices = require("../services/achievementServices");
+const monthlyChallengeServices = require("../services/monthlyChallengeServices");
 
 const updateActivities = async (req, res) => {
   try {
@@ -21,6 +22,12 @@ const updateActivities = async (req, res) => {
 
     // Atualiza as quests do campeão
     await questsServices.updateQuestByLink(id, stats, value);
+
+    await monthlyChallengeServices.updateMonthlyChallengeByLink(
+      id,
+      stats,
+      value
+    );
 
     // Atualiza as conquistas do campeão
     await achievementServices.updateAchievementByLink(id, stats);

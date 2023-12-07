@@ -116,4 +116,8 @@ router.delete(
   monthlyChallengeController.deleteMonthlyChallenge
 );
 
+// Quests Diarias
+
+router.post("/daily-quests-create", questsController.createDailyQuests);
+
 module.exports = router;

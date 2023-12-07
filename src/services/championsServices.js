@@ -67,7 +67,7 @@ const getChampionById = async (id) => {
  */
 const getAllChampions = async () => {
   try {
-    const champions = await Champion.findAll({});
+    const champions = await Champion.findAll();
     return champions;
   } catch (error) {
     console.error(`Erro ao buscar todos os campeões: ${error}`);

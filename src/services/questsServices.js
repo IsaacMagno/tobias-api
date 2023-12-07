@@ -1,4 +1,23 @@
 const { Quests } = require("../database/models");
+const { getAllChampions } = require("./championsServices");
+
+const createDailyQuests = async (dailyQuestData) => {
+  try {
+    const champions = await getAllChampions();
+
+    for (const champion of champions) {
+      let questLimitDate = new Date();
+      questLimitDate.setDate(questLimitDate.getDate() + 1);
+      dailyQuestData.champion_id = champion.id;
+      dailyQuestData.questLimitDate = questLimitDate;
+
+      createQuest(dailyQuestData);
+    }
+  } catch (error) {
+    console.error(`Erro ao criar quests diárias: ${error}`);
+    throw error;
+  }
+};
 
 /**
  * Busca todas as quests.
@@ -56,7 +75,7 @@ const updateQuest = async (id, { questData }) => {
 
     const questDataUpdate = { actual: quest.actual + parseInt(questData) };
 
-    if (questDataUpdate.actual === quest.goal) {
+    if (questDataUpdate.actual >= quest.goal) {
       questDataUpdate.completed = true;
       questDataUpdate.completedDate = new Date();
     }
@@ -110,6 +129,7 @@ const updateQuestByLink = async (id, stats, value) => {
 };
 
 module.exports = {
+  createDailyQuests,
   getAllQuests,
   getQuestById,
   createQuest,

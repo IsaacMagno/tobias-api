@@ -4,9 +4,12 @@ const {
   AchievementsCompleted,
   Champion,
 } = require("../database/models");
+const { calculateLevel } = require("../helpers/calculateLevel");
 const {
   createAchievementCompleted,
 } = require("./achievementsCompletedServices");
+
+const LEVEL_FACTOR = 35;
 
 /**
  * Busca uma conquista pelo ID.
@@ -143,18 +146,26 @@ const updateAchievementByLink = async (id, stats) => {
 
           // Busca o campeão
           const champion = await Champion.findOne({ where: { id } });
+          const rewards = JSON.parse(achievement.rewards);
 
           // Adiciona os novos valores aos valores existentes
-          const updatedXp = (champion.xp || 0) + achievement.rewards.xp;
+          const xpBoost = rewards.xp * (champion.xpBoost / 100);
+          const updatedXp =
+            parseFloat(champion.xp) +
+            parseFloat(rewards.xp) +
+            parseFloat(xpBoost);
+
+          const actualNv = calculateLevel(updatedXp, LEVEL_FACTOR);
+
           const updatedTobiasCoins =
-            (champion.tobiasCoins || 0) + achievement.rewards.tobiasCoins;
+            (champion.tobiasCoins || 0) + rewards.tobiasCoins;
           const updatedAchievementPoints =
-            (champion.achievementPoints || 0) +
-            achievement.rewards.achievementPoints;
+            (champion.achievementPoints || 0) + rewards.achievementPoints;
 
           // Atualiza o campeão
           await Champion.update(
             {
+              level: actualNv,
               xp: updatedXp,
               tobiasCoins: updatedTobiasCoins,
               achievementPoints: updatedAchievementPoints,

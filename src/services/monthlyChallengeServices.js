@@ -31,9 +31,20 @@ const createMonthlyChallenge = async (newChallenge) => {
   }
 };
 
-const updateMonthlyChallenge = async (id, updatedChallenge) => {
+const updateMonthlyChallenge = async (id, { challengeData }) => {
   try {
-    await MonthlyChallenge.update(updatedChallenge, { where: { id } });
+    const challenge = await getMonthlyChallengeById(id);
+
+    const challengeDataUpdate = {
+      questActual: challenge.questActual + parseInt(challengeData),
+    };
+
+    if (challengeDataUpdate.questActual >= challenge.questGoal) {
+      questDataUpdate.completed = true;
+    }
+
+    await MonthlyChallenge.update(challengeDataUpdate, { where: { id } });
+
     return await getMonthlyChallengeById(id);
   } catch (error) {
     console.error(`Erro ao atualizar o desafio mensal: ${error}`);
@@ -50,10 +61,37 @@ const deleteMonthlyChallenge = async (id) => {
   }
 };
 
+/**
+ * Atualiza uma challenge com base no link.
+ * @param {number} id - O ID do campeão.
+ * @param {string} stats - As estatísticas.
+ * @param {number} value - O valor a ser atualizado.
+ * @throws {Error} Lança um erro se houver algum problema ao atualizar a quest.
+ */
+const updateMonthlyChallengeByLink = async (id, stats, value) => {
+  try {
+    // Busca todas as challenge que têm o link correspondente
+    const challenge = await MonthlyChallenge.findOne({
+      where: { champion_id: id, link: [stats] },
+      raw: true,
+    });
+
+    // Itera sobre todas as challenge
+    if (challenge) {
+      // Atualiza cada challenge
+      await updateMonthlyChallenge(challenge.id, { challengeData: value });
+    }
+  } catch (error) {
+    console.error(`Erro ao atualizar a quest por vinculação:`, error);
+    throw error;
+  }
+};
+
 module.exports = {
   getAllMonthlyChallenges,
   getMonthlyChallengeById,
   createMonthlyChallenge,
   updateMonthlyChallenge,
   deleteMonthlyChallenge,
+  updateMonthlyChallengeByLink,
 };
