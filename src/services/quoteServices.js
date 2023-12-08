@@ -2,6 +2,13 @@ const { Quote } = require("../database/models");
 
 const ERROR_QUOTE_NOT_FOUND = "Citação não encontrada!";
 
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+};
+
 /**
  * Seleciona aleatoriamente uma citação de todas as citações disponíveis.
  * @returns {object} Retorna uma citação selecionada aleatoriamente.
@@ -15,9 +22,12 @@ const randomSelectQuote = async () => {
       throw new Error("Não há citações disponíveis para selecionar.");
     }
 
-    const randomNumber = Math.floor(Math.random() * quotes.length);
+    // const randomNumber = Math.floor(Math.random() * quotes.length);
 
-    return quotes[randomNumber];
+    // return quotes[randomNumber];
+    shuffleArray(quotes);
+
+    return quotes[0];
   } catch (error) {
     console.error(`Erro ao selecionar uma citação aleatória: ${error}`);
     throw error;

@@ -30,14 +30,15 @@ const updateActivities = async (req, res) => {
     );
 
     // Atualiza as conquistas do campeão
-    await achievementServices.updateAchievementByLink(id, stats);
+    const achievementCompleted =
+      await achievementServices.updateAchievementByLink(id, stats);
 
     // Atualiza as statistics do campeão e retorna os dados do mesmo atualizado
     const championUpdated = await statisticsServices.updateStatistic(
       updateChampActivities
     );
 
-    return res.status(200).json({ championUpdated });
+    return res.status(200).json({ championUpdated, achievementCompleted });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

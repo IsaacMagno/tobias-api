@@ -40,7 +40,7 @@ const updateMonthlyChallenge = async (id, { challengeData }) => {
     };
 
     if (challengeDataUpdate.questActual >= challenge.questGoal) {
-      questDataUpdate.completed = true;
+      challengeDataUpdate.completed = true;
     }
 
     await MonthlyChallenge.update(challengeDataUpdate, { where: { id } });

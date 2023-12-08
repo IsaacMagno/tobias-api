@@ -8,6 +8,7 @@ const { calculateLevel } = require("../helpers/calculateLevel");
 const {
   createAchievementCompleted,
 } = require("./achievementsCompletedServices");
+const { getAllStatistics, findStatisticById } = require("./statisticsServices");
 
 const LEVEL_FACTOR = 35;
 
@@ -103,78 +104,122 @@ const getAchievementByLink = async (stats) => {
 };
 
 /**
+ * Verifica se uma conquista já foi completada.
+ * @param {Array} achievementsCompleted - A lista de conquistas completadas.
+ * @param {number} achievementId - O ID da conquista.
+ * @returns {boolean} Verdadeiro se a conquista já foi completada, falso caso contrário.
+ */
+const isAchievementCompleted = (achievementsCompleted, achievementId) => {
+  return achievementsCompleted.some(
+    (achiev) => achiev.achievement_id === achievementId
+  );
+};
+
+/**
+ * Cria uma conquista completada.
+ * @param {number} id - O ID do campeão.
+ * @param {number} achievementId - O ID da conquista.
+ * @throws {Error} Lança um erro se houver algum problema ao criar a conquista completada.
+ */
+const completeAchievement = async (id, achievementId) => {
+  await createAchievementCompleted({
+    champion_id: id,
+    achievement_id: achievementId,
+    date: Date.now(),
+  });
+};
+
+/**
+ * Atualiza o campeão.
+ * @param {number} id - O ID do campeão.
+ * @param {Object} champion - O objeto do campeão.
+ * @param {Object} rewards - As recompensas.
+ * @throws {Error} Lança um erro se houver algum problema ao atualizar o campeão.
+ */
+const updateChampion = async (id, champion, rewards) => {
+  const xpBoost = rewards.xp * (champion.xpBoost / 100);
+  const updatedXp =
+    parseFloat(champion.xp) + parseFloat(rewards.xp) + parseFloat(xpBoost);
+
+  const actualNv = calculateLevel(updatedXp, LEVEL_FACTOR);
+
+  const updatedTobiasCoins = (champion.tobiasCoins || 0) + rewards.tobiasCoins;
+  const updatedAchievementPoints =
+    (champion.achievementPoints || 0) + rewards.achievementPoints;
+
+  await Champion.update(
+    {
+      level: actualNv,
+      xp: updatedXp,
+      tobiasCoins: updatedTobiasCoins,
+      achievementPoints: updatedAchievementPoints,
+    },
+    { where: { id } }
+  );
+};
+
+/**
  * Atualiza uma conquista com base no link.
  * @param {number} id - O ID do campeão.
  * @param {string} stats - As estatísticas.
+ * @returns {boolean} Verdadeiro se uma nova conquista foi completada, falso caso contrário.
  * @throws {Error} Lança um erro se houver algum problema ao atualizar a conquista.
  */
 const updateAchievementByLink = async (id, stats) => {
   try {
-    // Busca a atividade do campeão
+    let newAchievementCompleted = false;
+
     const activities = await Activitie.findOne({
       where: { champion_id: id },
       raw: true,
     });
 
-    // Obtém o valor da estatística
     const statValue = activities[stats];
-
-    // Busca todas as conquistas que têm o link correspondente
     const achievements = await getAchievementByLink([stats]);
-
-    // Busca todas as conquistas completadas do campeão
     const achievementsCompleted = await AchievementsCompleted.findAll({
       where: { champion_id: id },
     });
 
-    // Itera sobre todas as conquistas
     for (const achievement of achievements) {
-      // Verifica se o valor da estatística é maior ou igual à meta da conquista
       if (statValue >= achievement.goal) {
-        // Verifica se a conquista já foi completada
-        const alreadyCompleted = achievementsCompleted.some(
-          (achiev) => achiev.achievement_id === achievement.id
-        );
+        if (!isAchievementCompleted(achievementsCompleted, achievement.id)) {
+          await completeAchievement(id, achievement.id);
 
-        // Se a conquista ainda não foi completada, cria uma nova conquista completada
-        if (!alreadyCompleted) {
-          await createAchievementCompleted({
-            champion_id: id,
-            achievement_id: achievement.id,
-            date: Date.now(),
-          });
-
-          // Busca o campeão
           const champion = await Champion.findOne({ where: { id } });
           const rewards = JSON.parse(achievement.rewards);
+          // const rewards = achievement.rewards;
 
-          // Adiciona os novos valores aos valores existentes
-          const xpBoost = rewards.xp * (champion.xpBoost / 100);
-          const updatedXp =
-            parseFloat(champion.xp) +
-            parseFloat(rewards.xp) +
-            parseFloat(xpBoost);
+          await updateChampion(id, champion, rewards);
 
-          const actualNv = calculateLevel(updatedXp, LEVEL_FACTOR);
-
-          const updatedTobiasCoins =
-            (champion.tobiasCoins || 0) + rewards.tobiasCoins;
-          const updatedAchievementPoints =
-            (champion.achievementPoints || 0) + rewards.achievementPoints;
-
-          // Atualiza o campeão
-          await Champion.update(
-            {
-              level: actualNv,
-              xp: updatedXp,
-              tobiasCoins: updatedTobiasCoins,
-              achievementPoints: updatedAchievementPoints,
-            },
-            { where: { id } }
-          );
+          newAchievementCompleted = true;
         }
       }
     }
+
+    const wisdomAchievements = await getAchievementByLink("wisdom");
+    const statistics = await findStatisticById(id);
+
+    let total = Object.keys(statistics)
+      .filter((key) => key !== "id" && key !== "champion_id")
+      .reduce((sum, key) => sum + statistics[key], 0);
+
+    for (const wisdomAchiev of wisdomAchievements) {
+      if (total >= wisdomAchiev.goal) {
+        if (!isAchievementCompleted(achievementsCompleted, wisdomAchiev.id)) {
+          await completeAchievement(id, wisdomAchiev.id);
+
+          const champion = await Champion.findOne({ where: { id } });
+          const rewards = JSON.parse(wisdomAchiev.rewards);
+          // const rewards = wisdomAchiev.rewards;
+
+          await updateChampion(id, champion, rewards);
+
+          newAchievementCompleted = true;
+        }
+      }
+    }
+
+    return newAchievementCompleted;
   } catch (error) {
     console.error(`Erro ao atualizar a conquista por link:`, error);
     throw error;
