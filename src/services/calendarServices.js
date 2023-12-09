@@ -5,11 +5,11 @@ const { Calendar, Event } = require("../database/models");
  * @param {number} id - O ID do campeão.
  * @returns {object} Retorna o calendário se encontrado, null caso contrário.
  */
-const findCalendarById = async (id) => {
+const findCalendarById = async (id, events = false) => {
   // Busca o calendário pelo ID do campeão
   const calendar = await Calendar.findOne({
     where: { champion_id: id },
-    raw: true,
+    include: [`${events ? "events" : ""}`],
   });
   return calendar;
 };
@@ -51,7 +51,7 @@ const createCalendar = async (id) => {
 const getCalendar = async () => {
   try {
     const calendars = await Calendar.findAll({
-      include: { all: true },
+      include: ["events"],
     });
 
     return calendars;
@@ -99,6 +99,7 @@ const deleteEvent = async ({ date }, id) => {
 };
 
 module.exports = {
+  findCalendarById,
   createCalendar,
   getCalendar,
   createEvent,

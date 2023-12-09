@@ -34,7 +34,7 @@ protectedRouter.put(
 // protectedRouter.get("/champion/:id", championsController.getChampionByIdFull);
 
 // Calendario
-protectedRouter.get("/calendars", calendarController.getCalendar);
+// protectedRouter.get("/calendars", calendarController.getCalendar);
 
 // Eventos
 protectedRouter.post("/event/:id", calendarController.createEvent);

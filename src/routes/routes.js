@@ -120,4 +120,7 @@ router.delete(
 
 router.post("/daily-quests-create", questsController.createDailyQuests);
 
+router.get("/calendars", calendarController.getCalendar);
+router.get("/calendars/:id", calendarController.getCalendarById);
+
 module.exports = router;

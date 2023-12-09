@@ -12,11 +12,16 @@ const getChampionByIdFull = async (id) => {
   try {
     const champion = await Champion.findOne({
       where: { id },
-      include: [{ all: true, nested: true }], // Inclui todas as tabelas associadas
+      include: [
+        "statistics",
+        "activities",
+        "files",
+        "goal",
+        "achievementsCompleted",
+        "quests",
+        "monthlyChallenge",
+      ],
     });
-
-    // Remove a chave 'authentication' do objeto retornado
-    delete champion.dataValues.authentication;
 
     return champion;
   } catch (error) {

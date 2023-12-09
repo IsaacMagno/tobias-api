@@ -1,5 +1,17 @@
 const calendarServices = require("../services/calendarServices");
 
+const getCalendarById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const calendars = await calendarServices.findCalendarById(id, true);
+
+    return res.status(200).json({ calendars });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const getCalendar = async (_req, res) => {
   try {
     const calendars = await calendarServices.getCalendar();
@@ -49,6 +61,7 @@ const deleteEvent = async (req, res) => {
 };
 
 module.exports = {
+  getCalendarById,
   getCalendar,
   createEvent,
   deleteEvent,
