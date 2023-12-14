@@ -13,6 +13,7 @@ const Achievement = require("./achievement");
 const AchievementsCompleted = require("./achievementsCompleted");
 const MonthlyChallenge = require("./monthlyChallenge");
 const Quests = require("./quests");
+const ActivitiesIntensity = require("./activitiesIntensity");
 
 Champion.hasOne(Statistic, {
   foreignKey: "champion_id",
@@ -101,6 +102,14 @@ MonthlyChallenge.belongsTo(Champion, {
   foreignKey: "champion_id",
   as: "champion",
 });
+Champion.hasOne(ActivitiesIntensity, {
+  foreignKey: "champion_id",
+  as: "activitiesIntensity",
+});
+ActivitiesIntensity.belongsTo(Champion, {
+  foreignKey: "champion_id",
+  as: "champion",
+});
 
 module.exports = {
   Champion,
@@ -118,4 +127,5 @@ module.exports = {
   AchievementsCompleted,
   MonthlyChallenge,
   Quests,
+  ActivitiesIntensity,
 };

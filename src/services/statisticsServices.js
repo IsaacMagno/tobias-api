@@ -7,7 +7,7 @@ const { getChampionByIdFull } = require("./championService");
  * @param {object[]} activities - As atividades do campeão.
  * @returns {Promise} Retorna uma promessa que resolve quando todas as estatísticas são atualizadas.
  */
-const updateStatistic = async (activities) => {
+const updateStatistic = async (activities, stats) => {
   try {
     const { id } = activities;
 
@@ -18,7 +18,12 @@ const updateStatistic = async (activities) => {
     });
 
     // Refatorar as estatísticas
-    const valuesToUpdate = await statsRefactor(activities, actualStats, id);
+    const valuesToUpdate = await statsRefactor(
+      activities,
+      actualStats,
+      id,
+      stats
+    );
 
     const valuesToArray = Object.entries(valuesToUpdate);
 

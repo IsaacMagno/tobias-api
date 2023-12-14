@@ -1,4 +1,4 @@
-const { Activitie } = require("../database/models");
+const { Activitie, ActivitiesIntensity } = require("../database/models");
 const {
   updateChampionExp,
   updateChampionDaystreak,
@@ -52,18 +52,18 @@ const handleUpdateExpAndDaystreak = async (id, stats, value) => {
 const updateActivities = async (champion_id, stats, value) => {
   try {
     // Buscar as estatísticas antigas
-    const oldStats = await findActivityById(champion_id);
+    const oldActivities = await findActivityById(champion_id);
 
     // Verificar se as estatísticas antigas existem
-    if (!oldStats) {
+    if (!oldActivities) {
       throw new Error("No old stats found for the given champion_id");
     }
 
-    const { [stats]: oldStat } = oldStats;
+    const { [stats]: oldActivitie } = oldActivities;
 
     // Atualizar as estatísticas
     await Activitie.update(
-      { [stats]: parseFloat(value) + parseFloat(oldStat) },
+      { [stats]: parseFloat(value) + parseFloat(oldActivitie) },
       { where: { champion_id } }
     );
 
@@ -73,6 +73,62 @@ const updateActivities = async (champion_id, stats, value) => {
     const statsUpdated = await findActivityById(champion_id);
 
     return statsUpdated;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const intensityMultipliers = {
+  alta: (value) => value * 2,
+  media: (value) => value * 1.5,
+  baixa: (value) => value,
+};
+
+const handleCalculateActivitie = (
+  activitieIntensity = "baixa",
+  activitieValue
+) => {
+  const calculate = intensityMultipliers[activitieIntensity];
+  if (!calculate) {
+    console.log("Intensidade não reconhecida");
+    return;
+  }
+  return calculate(activitieValue);
+};
+
+const updateActivitiesIntensity = async (
+  champion_id,
+  stats,
+  value,
+  intensity
+) => {
+  try {
+    const old = await ActivitiesIntensity.findOne({
+      where: { champion_id },
+      raw: true,
+    });
+
+    if (!old) {
+      throw new Error("No old stats found for the given champion_id");
+    }
+
+    const { [stats]: oldActivitie } = old;
+
+    const updatedValue = handleCalculateActivitie(intensity, value);
+
+    // Atualizar as estatísticas
+    await ActivitiesIntensity.update(
+      { [stats]: parseFloat(updatedValue) + parseFloat(oldActivitie) },
+      { where: { champion_id } }
+    );
+
+    const updated = await ActivitiesIntensity.findOne({
+      where: { champion_id },
+      raw: true,
+    });
+
+    return updated;
   } catch (error) {
     console.error(error);
     throw error;
@@ -95,4 +151,5 @@ const findActivityById = async (id) => {
 
 module.exports = {
   updateActivities,
+  updateActivitiesIntensity,
 };
