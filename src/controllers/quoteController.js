@@ -39,6 +39,10 @@ const createQuote = async (req, res) => {
 
     return res.status(201).json({ newQuote });
   } catch (error) {
+    if (error.message === "Quote already exists in the database") {
+      return res.status(409).json({ message: error.message });
+    }
+
     return res.status(500).json({ message: error.message });
   }
 };

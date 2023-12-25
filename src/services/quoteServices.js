@@ -55,8 +55,20 @@ const getAllQuotes = async () => {
  * Cria uma nova citação.
  * @param {object} quoteData - Os dados da nova citação.
  * @returns {object} Retorna a nova citação criada.
+ * @throws {Error} Se a citação já existir no banco de dados.
  */
 const createQuote = async (quoteData) => {
+  // Verifica se já existe uma quote com o mesmo texto
+  const existingQuote = await Quote.findOne({
+    where: { quote: quoteData.quote },
+  });
+
+  if (existingQuote) {
+    // Lança um erro se a quote já existir
+    throw new Error("Quote already exists in the database");
+  }
+
+  // Cria uma nova quote se não existir
   return await Quote.create(quoteData);
 };
 

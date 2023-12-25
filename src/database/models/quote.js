@@ -8,6 +8,7 @@ Quote.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     quote: DataTypes.TEXT,
     author: DataTypes.STRING,
+    championId: DataTypes.INTEGER,
   },
   {
     sequelize,
