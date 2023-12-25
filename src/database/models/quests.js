@@ -22,7 +22,7 @@ Quest.init(
   },
   {
     sequelize,
-    tableName: "Quests",
+    tableName: "quests",
     timestamps: false,
   }
 );

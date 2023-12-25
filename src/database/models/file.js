@@ -10,7 +10,7 @@ File.init(
   },
   {
     sequelize,
-    tableName: "Files",
+    tableName: "files",
     timestamps: false,
   }
 );

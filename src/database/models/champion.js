@@ -21,7 +21,7 @@ Champion.init(
   },
   {
     sequelize,
-    tableName: "Champions",
+    tableName: "champions",
     timestamps: false,
   }
 );

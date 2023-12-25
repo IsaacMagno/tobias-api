@@ -11,7 +11,7 @@ Token.init(
   },
   {
     sequelize,
-    tableName: "Tokens",
+    tableName: "tokens",
     timestamps: false,
   }
 );

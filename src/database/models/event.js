@@ -13,7 +13,7 @@ Event.init(
   },
   {
     sequelize,
-    tableName: "Events",
+    tableName: "events",
     timestamps: false,
     underscored: true,
   }

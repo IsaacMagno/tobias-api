@@ -11,7 +11,7 @@ Quote.init(
   },
   {
     sequelize,
-    tableName: "Quotes",
+    tableName: "quotes",
     timestamps: false,
   }
 );

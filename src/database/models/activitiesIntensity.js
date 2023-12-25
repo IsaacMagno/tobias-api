@@ -21,7 +21,7 @@ ActivitiesIntensity.init(
   },
   {
     sequelize,
-    tableName: "ActivitiesIntensity",
+    tableName: "activitiesintensity",
     timestamps: false,
   }
 );

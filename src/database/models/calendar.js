@@ -12,7 +12,7 @@ Calendar.init(
   },
   {
     sequelize,
-    tableName: "Calendars",
+    tableName: "calendars",
     timestamps: false,
   }
 );

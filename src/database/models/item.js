@@ -21,7 +21,7 @@ Item.init(
   },
   {
     sequelize,
-    tableName: "Items",
+    tableName: "items",
     timestamps: false,
   }
 );

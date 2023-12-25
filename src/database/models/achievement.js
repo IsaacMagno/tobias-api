@@ -15,7 +15,7 @@ Achievement.init(
   },
   {
     sequelize,
-    tableName: "Achievements",
+    tableName: "achievements",
     timestamps: false,
   }
 );

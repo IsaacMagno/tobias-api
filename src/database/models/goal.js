@@ -24,7 +24,7 @@ Goal.init(
   },
   {
     sequelize,
-    tableName: "Goals",
+    tableName: "goals",
     timestamps: false,
   }
 );

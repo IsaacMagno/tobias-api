@@ -17,7 +17,7 @@ MonthlyChallenge.init(
   },
   {
     sequelize,
-    tableName: "MonthlyChallenge",
+    tableName: "monthlychallenge",
     timestamps: false,
   }
 );

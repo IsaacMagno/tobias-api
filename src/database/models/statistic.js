@@ -14,7 +14,7 @@ Statistic.init(
   },
   {
     sequelize,
-    tableName: "Statistics",
+    tableName: "statistics",
     timestamps: false,
   }
 );

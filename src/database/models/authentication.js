@@ -12,7 +12,7 @@ Authentication.init(
   },
   {
     sequelize,
-    tableName: "Authentication",
+    tableName: "authentication",
     timestamps: false,
   }
 );

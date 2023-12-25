@@ -10,7 +10,7 @@ AchievementsCompleted.init(
   },
   {
     sequelize,
-    tableName: "AchievementsCompleted",
+    tableName: "achievementscompleted",
     timestamps: false,
     underscored: true,
   }
