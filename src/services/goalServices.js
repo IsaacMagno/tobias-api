@@ -119,7 +119,7 @@ const deleteGoal = async (id) => {
  * @param {number} value - O valor.
  * @throws {Error} Lança um erro se ocorrer um problema ao atualizar a meta.
  */
-const updateGoalByLink = async (id, [stats], value) => {
+const updateGoalByLink = async (id, stats, value) => {
   try {
     // Busca todas as metas que têm o link correspondente
     const goals = await Goal.findAll({
