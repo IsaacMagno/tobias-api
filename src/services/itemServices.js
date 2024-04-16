@@ -111,6 +111,7 @@ const buyDaystreakShield = async ({ buyData }) => {
         tobiasCoins: champion.tobiasCoins - item.price,
       });
     } else {
+      return { error: { message: "Campeão já tem 3 shields!" } };
     }
   } catch (error) {
     console.error(`Erro ao comprar item com id:${buyData.itemId}:`, error);

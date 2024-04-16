@@ -15,6 +15,16 @@ const BIO_PATTERN =
 const DAILY_XP_INCREMENT = 25;
 const LEVEL_FACTOR = 35;
 
+const getAllChampionsMonthlyChallenge = async () => {
+  try {
+    const champions = await Champion.findAll({ include: "monthlyChallenge" });
+    return champions;
+  } catch (error) {
+    console.error(`Erro ao buscar todos os campeões: ${error}`);
+    throw error;
+  }
+};
+
 /**
  * Função para atualizar o daystreak e o daystreakShield de um campeão.
  * Atualiza o daystreak, o daystreakShield e a última data de login de um campeão.
@@ -274,4 +284,5 @@ module.exports = {
   updateChampionExp,
   updateChampionDaystreak,
   updateChampionDaystreakAndShield,
+  getAllChampionsMonthlyChallenge,
 };

@@ -13,6 +13,7 @@ const goalController = require("../controllers/goalController");
 const achievementsCompletedController = require("../controllers//achievementsCompletedController");
 const questsController = require("../controllers/questsController");
 const monthlyChallengeController = require("../controllers/monthlyChallengeController");
+const statsDetailsController = require("../controllers/statsDetailsController");
 
 const validateRegister = require("../middlewares/validateRegister");
 
@@ -35,6 +36,8 @@ router.post("/uploads", uploadImage.single("file"), filesController.uploadFile);
 
 //Calendario
 router.post("/calendar/:id", calendarController.createCalendar);
+router.get("/calendars", calendarController.getCalendar);
+router.get("/calendars/:id", calendarController.getCalendarById);
 
 // Atividades
 router.post("/activities/:id", activitiesController.createActivities);
@@ -93,6 +96,7 @@ router.get("/quests/:id", questsController.getQuestById);
 router.post("/quests", questsController.createQuest);
 router.put("/quests/:id", questsController.updateQuest);
 router.delete("/quests/:id", questsController.deleteQuest);
+router.post("/regenerate-quest", questsController.generateNewDailyQuest);
 
 // Monthly Challenge
 router.get(
@@ -116,11 +120,15 @@ router.delete(
   monthlyChallengeController.deleteMonthlyChallenge
 );
 
+router.get(
+  "/getallchampionsmonthlychallenge",
+  championsController.getAllChampionsMonthlyChallenge
+);
+
 // Quests Diarias
 
 router.post("/daily-quests-create", questsController.createDailyQuests);
 
-router.get("/calendars", calendarController.getCalendar);
-router.get("/calendars/:id", calendarController.getCalendarById);
+router.get("/statsDetails/:id", statsDetailsController.getStatsDetailsById);
 
 module.exports = router;

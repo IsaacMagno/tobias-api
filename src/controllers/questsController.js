@@ -1,5 +1,18 @@
 const questsServices = require("../services/questsServices");
 
+const generateNewDailyQuest = async (req, res) => {
+  try {
+    const updateData = req.body;
+
+    const questGenerated = await questsServices.generateNewDailyQuest(
+      updateData
+    );
+    return res.status(200).json({ questGenerated });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const createDailyQuests = async (req, res) => {
   try {
     const createdDailyQuests = await questsServices.createDailyQuests(req.body);
@@ -62,4 +75,5 @@ module.exports = {
   createQuest,
   updateQuest,
   deleteQuest,
+  generateNewDailyQuest,
 };

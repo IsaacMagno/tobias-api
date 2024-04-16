@@ -10,11 +10,6 @@ Quest.init(
     questGoal: DataTypes.INTEGER,
     questActual: DataTypes.INTEGER,
     questLimitDate: DataTypes.DATEONLY,
-    questType: {
-      type: DataTypes.ENUM,
-      values: ["solo", "group"],
-      allowNull: false,
-    },
     questReward: DataTypes.JSON,
     completed: DataTypes.BOOLEAN,
     completedDate: DataTypes.DATEONLY,

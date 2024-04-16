@@ -2,7 +2,11 @@ const itemServices = require("../services/itemServices");
 
 const buyItem = async (req, res) => {
   try {
-    const itemBuyed = itemServices.buyDaystreakShield(req.body);
+    const itemBuyed = await itemServices.buyDaystreakShield(req.body);
+
+    if (itemBuyed !== undefined) {
+      return res.status(500).json({ message: itemBuyed.error.message });
+    }
 
     return res.status(200).json({ itemBuyed });
   } catch (error) {

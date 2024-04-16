@@ -1,4 +1,8 @@
-const { Activitie, ActivitiesIntensity } = require("../database/models");
+const {
+  Activitie,
+  ActivitiesIntensity,
+  StatsDetails,
+} = require("../database/models");
 const {
   updateChampionExp,
   updateChampionDaystreak,
@@ -17,6 +21,36 @@ const expBase = {
   study: 200,
   meditation: 1000,
   reading: 300,
+};
+
+const activitiesDivision = {
+  kmRun: 5,
+  jumpRope: 1800,
+  kmBike: 20,
+  upperLimb: 300,
+  abs: 500,
+  lowerLimb: 300,
+  study: 5,
+  meditation: 1,
+  reading: 3,
+  meals: 8,
+  drinks: 10,
+  sleep: 240,
+};
+
+const statsDetailsKeys = {
+  study: "intFromStudy",
+  meditation: "intFromMeditation",
+  reading: "intFromReading",
+  upperLimb: "strFromUpper",
+  lowerLimb: "strFromLower",
+  abs: "strFromAbs",
+  jumpRope: "dexFromRope",
+  kmBike: "dexFromBike",
+  kmRun: "dexFromRun",
+  meals: "conFromMeals",
+  drinks: "conFromDrinks",
+  sleep: "conFromSleep",
 };
 
 /**
@@ -128,11 +162,38 @@ const updateActivitiesIntensity = async (
       raw: true,
     });
 
+    updateStatsDetails(updated);
+
     return updated;
   } catch (error) {
     console.error(error);
     throw error;
   }
+};
+
+const updateStatsDetails = async (statsIntensityUpdated) => {
+  const statsKeys = Object.keys(statsIntensityUpdated).filter(
+    (stat) => stat !== "id" && stat !== "champion_id"
+  );
+
+  const calculatedStats = statsKeys.reduce((acc, stat) => {
+    acc[statsDetailsKeys[stat]] =
+      statsIntensityUpdated[stat] / activitiesDivision[stat];
+    return acc;
+  }, {});
+
+  const entries = Object.entries(calculatedStats);
+
+  // Atualizar cada stats
+  const updatePromises = entries.map(async ([key, value]) => {
+    await StatsDetails.update(
+      { [key]: value },
+      { where: { champion_id: statsIntensityUpdated.champion_id } }
+    );
+  });
+
+  // // Aguardar todas as atualizações
+  await Promise.all(updatePromises);
 };
 
 /**
@@ -152,4 +213,5 @@ const findActivityById = async (id) => {
 module.exports = {
   updateActivities,
   updateActivitiesIntensity,
+  findActivityById,
 };

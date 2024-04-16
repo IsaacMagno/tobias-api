@@ -18,6 +18,7 @@ Champion.init(
     daystreakShield: DataTypes.INTEGER,
     tobiasCoins: DataTypes.FLOAT,
     achievementPoints: DataTypes.INTEGER,
+    lastFreeQuestUpdate: DataTypes.DATE,
   },
   {
     sequelize,

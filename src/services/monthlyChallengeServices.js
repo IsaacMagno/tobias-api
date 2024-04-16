@@ -72,7 +72,7 @@ const updateMonthlyChallengeByLink = async (id, stats, value) => {
   try {
     // Busca todas as challenge que têm o link correspondente
     const challenge = await MonthlyChallenge.findOne({
-      where: { champion_id: id, link: [stats] },
+      where: { champion_id: id, link: [stats], completed: false },
       raw: true,
     });
 

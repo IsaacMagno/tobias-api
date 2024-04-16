@@ -1,6 +1,19 @@
 const championsServices = require("../services/championsServices");
 const championsService = require("../services/championService");
 
+const getAllChampionsMonthlyChallenge = async (_req, res) => {
+  try {
+    const champions = await championsServices.getAllChampionsMonthlyChallenge();
+
+    return res.status(200).json({ champions });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Erro ao buscar todos os campeões" });
+  }
+};
+
 const getChampionByIdFull = async (req, res) => {
   try {
     const { id } = req.params;
@@ -100,4 +113,5 @@ module.exports = {
   updateChampionBiography,
   updateChampionExp,
   updateChampionDaystreak,
+  getAllChampionsMonthlyChallenge,
 };

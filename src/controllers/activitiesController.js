@@ -13,12 +13,14 @@ const updateActivities = async (req, res) => {
     const { [stats[0]]: value } = req.body;
     const { activitieIntensity } = req.body;
 
+    // Atualiza as atividades
     const updateChampActivities = await activitiesServices.updateActivities(
       id,
       stats[0],
       value
     );
 
+    // Atualiza as atividades aplicando intensidade
     const updateChampActivitiesIntensity =
       await activitiesServices.updateActivitiesIntensity(
         id,
@@ -27,23 +29,24 @@ const updateActivities = async (req, res) => {
         activitieIntensity
       );
 
-    // Atualiza as metas do campeão
+    // Atualiza as metas
     await goalServices.updateGoalByLink(id, stats[0], value);
 
-    // Atualiza as quests do campeão
+    // Atualiza as quests
     await questsServices.updateQuestByLink(id, stats[0], value);
 
+    // Atualiza quests mensais
     await monthlyChallengeServices.updateMonthlyChallengeByLink(
       id,
       stats[0],
       value
     );
 
-    // Atualiza as conquistas do campeão
+    // Atualiza as conquistas
     const achievementCompleted =
       await achievementServices.updateAchievementByLink(id, stats[0]);
 
-    // Atualiza as statistics do campeão e retorna os dados do mesmo atualizado
+    // Atualiza as statistics e retorna os dados do mesmo atualizado
     const championUpdated = await statisticsServices.updateStatistic(
       updateChampActivitiesIntensity,
       stats[0],

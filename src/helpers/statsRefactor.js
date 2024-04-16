@@ -38,7 +38,7 @@ const handleGiveTitle = async (id, total, maxKey, maxValue) => {
   };
 
   // Calcula o índice do título com base no valor máximo da estatística
-  let titleIndex = Math.floor(maxValue / 100);
+  let titleIndex = Math.floor(maxValue / 100) - 1;
   titleIndex =
     titleIndex >= titles[maxKey].length
       ? titles[maxKey].length - 1
@@ -48,16 +48,31 @@ const handleGiveTitle = async (id, total, maxKey, maxValue) => {
   let sub_title = titles[maxKey][titleIndex];
 
   // Determina o título com base no total de pontos de estatística
+  // let title;
+  // if (total <= 499) {
+  //   title = `Lêmure ${sub_title}`;
+  // } else if (total <= 999) {
+  //   title = `Gibão ${sub_title}`;
+  // } else if (total <= 1999) {
+  //   title = `Orangotango ${sub_title}`;
+  // } else if (total <= 4999) {
+  //   title = `Gorila ${sub_title}`;
+  // } else if (total <= 9999) {
+  //   title = `Chimpanzé ${sub_title}`;
+  // } else {
+  //   title = `Humano ${sub_title}`;
+  // }
+
   let title;
-  if (total <= 499) {
+  if (total <= 199) {
     title = `Lêmure ${sub_title}`;
-  } else if (total <= 999) {
+  } else if (total <= 499) {
     title = `Gibão ${sub_title}`;
-  } else if (total <= 1999) {
+  } else if (total <= 999) {
     title = `Orangotango ${sub_title}`;
-  } else if (total <= 4999) {
+  } else if (total <= 2999) {
     title = `Gorila ${sub_title}`;
-  } else if (total <= 9999) {
+  } else if (total <= 4999) {
     title = `Chimpanzé ${sub_title}`;
   } else {
     title = `Humano ${sub_title}`;
@@ -220,8 +235,8 @@ const statsRefactor = async (activities, actualStats, id) => {
     const int = createStatObject(
       "inteligence",
       {
-        stu: study / 8,
-        medit: meditation / 2,
+        stu: study / 5,
+        medit: meditation / 1,
         read: reading / 3,
       },
       inteligence
