@@ -60,10 +60,22 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const countEventDateByWeekDayAndColor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const events = await calendarServices.countEventDateByWeekDayAndColor(id);
+
+    return res.status(200).json({ events });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getCalendarById,
   getCalendar,
   createEvent,
   deleteEvent,
   createCalendar,
+  countEventDateByWeekDayAndColor,
 };

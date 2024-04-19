@@ -131,4 +131,9 @@ router.post("/daily-quests-create", questsController.createDailyQuests);
 
 router.get("/statsDetails/:id", statsDetailsController.getStatsDetailsById);
 
+router.get(
+  "/countEvents/:id",
+  calendarController.countEventDateByWeekDayAndColor
+);
+
 module.exports = router;

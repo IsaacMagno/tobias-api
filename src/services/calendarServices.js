@@ -154,10 +154,45 @@ const deleteEvent = async ({ date }, id) => {
   }
 };
 
+const countEventDateByWeekDayAndColor = async (champion_id) => {
+  try {
+    const events = await Event.findAll({
+      where: { calendar_id: champion_id },
+    });
+
+    const coresPorDia = {
+      "segunda-feira": { green: 0, yellow: 0, red: 0 },
+      "terça-feira": { green: 0, yellow: 0, red: 0 },
+      "quarta-feira": { green: 0, yellow: 0, red: 0 },
+      "quinta-feira": { green: 0, yellow: 0, red: 0 },
+      "sexta-feira": { green: 0, yellow: 0, red: 0 },
+      sábado: { green: 0, yellow: 0, red: 0 },
+      domingo: { green: 0, yellow: 0, red: 0 },
+    };
+
+    events.forEach((event) => {
+      const data = new Date(event.date);
+
+      // Obtém o nome completo do dia da semana
+      const diaSemanaCompleto = data.toLocaleDateString("pt-BR", {
+        weekday: "long",
+      });
+
+      coresPorDia[diaSemanaCompleto][event.backgroundColor]++;
+    });
+
+    return coresPorDia;
+  } catch (error) {
+    console.error("Erro ao calcular eventos:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   findCalendarById,
   createCalendar,
   getCalendar,
   createEvent,
   deleteEvent,
+  countEventDateByWeekDayAndColor,
 };
