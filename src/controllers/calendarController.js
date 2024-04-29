@@ -12,7 +12,7 @@ const getCalendarById = async (req, res) => {
   }
 };
 
-const getCalendar = async (_req, res) => {
+const getCalendar = async (req, res) => {
   try {
     const calendars = await calendarServices.getCalendar();
 
@@ -22,7 +22,7 @@ const getCalendar = async (_req, res) => {
   }
 };
 
-const createCalendar = async (_req, res) => {
+const createCalendar = async (req, res) => {
   try {
     const { id } = req.params;
 

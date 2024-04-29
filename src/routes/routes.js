@@ -136,4 +136,8 @@ router.get(
   calendarController.countEventDateByWeekDayAndColor
 );
 
+router.get("/statsDetails/:id", statsDetailsController.getStatsDetailsById);
+
+router.get("/dailyActivities/:id", activitiesController.getDailyActivitiesById);
+
 module.exports = router;

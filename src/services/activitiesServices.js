@@ -2,6 +2,7 @@ const {
   Activitie,
   ActivitiesIntensity,
   StatsDetails,
+  DailyActivities,
 } = require("../database/models");
 const {
   updateChampionExp,
@@ -103,12 +104,60 @@ const updateActivities = async (champion_id, stats, value) => {
 
     await handleUpdateExpAndDaystreak(champion_id, stats, value);
 
+    await updateDailyActivities(champion_id, stats, value);
+
     // Buscar as estatísticas atualizadas
     const statsUpdated = await findActivityById(champion_id);
 
     return statsUpdated;
   } catch (error) {
     console.error(error);
+    throw error;
+  }
+};
+
+const updateDailyActivities = async (champion_id, stats, value) => {
+  try {
+    // Obtém a data atual
+    const date = new Date().toISOString().slice(0, 10);
+
+    // Verifica se já existe uma entrada para o campeão na data atual
+    let dailyActivity = await DailyActivities.findOne({
+      where: { champion_id, date },
+    });
+
+    // Se não houver uma entrada para o campeão na data atual, cria uma nova
+    if (!dailyActivity) {
+      dailyActivity = await DailyActivities.create({
+        champion_id,
+        date,
+      });
+    }
+
+    // Atualiza o valor correspondente ao stat especificado
+    switch (stats) {
+      case "study":
+      case "reading":
+      case "meditation":
+      case "upperLimb":
+      case "lowerLimb":
+      case "abs":
+      case "jumpRope":
+      case "kmBike":
+      case "kmRun":
+      case "meals":
+      case "drinks":
+      case "sleep":
+        // Adiciona o valor fornecido ao stat especificado
+        await dailyActivity.update({
+          [stats]: parseFloat(dailyActivity[stats] || 0) + parseFloat(value),
+        });
+        break;
+      default:
+        throw new Error("Stat inválido.");
+    }
+  } catch (error) {
+    console.error("Erro ao atualizar os dados de atividade diária:", error);
     throw error;
   }
 };
@@ -210,8 +259,17 @@ const findActivityById = async (id) => {
   return activity;
 };
 
+const getDailyActivitiesById = async (id) => {
+  // Busca a atividade diária pelo ID do campeão
+  let dailyActivity = await DailyActivities.findAll({
+    where: { champion_id: id },
+  });
+  return dailyActivity;
+};
+
 module.exports = {
   updateActivities,
   updateActivitiesIntensity,
   findActivityById,
+  getDailyActivitiesById,
 };

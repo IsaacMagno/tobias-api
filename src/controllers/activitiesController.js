@@ -83,8 +83,21 @@ const getActivities = async (req, res) => {
   }
 };
 
+const getDailyActivitiesById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const activities = await activitiesServices.getDailyActivitiesById(id);
+
+    return res.status(200).json({ activities });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createActivities,
   updateActivities,
   getActivities,
+  getDailyActivitiesById,
 };
